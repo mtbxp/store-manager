@@ -30,20 +30,20 @@ describe(`teste sales service`, () => {
   describe("lista as vendas pelo Id", () => {
     describe("se não existe", () => {
       before(() => {
-        sinon.stub(salesModel, "getSalesById").resolves([{}]);
+        sinon.stub(salesModel, "getSaleById").resolves([{}]);
       });
 
       after(() => {
-        salesModel.getSalesById.restore();
+        salesModel.getSaleById.restore();
       });
 
       it("se retorna um objeto", async () => {
-        const [result] = await salesService.getSalesById(988);
+        const [result] = await salesService.getSaleById(988);
         expect(result).to.be.an("object");
       });
 
       it("se retorna um objeto vazio", async () => {
-        const [result] = await salesService.getSalesById(988);
+        const [result] = await salesService.getSaleById(988);
         expect(result).to.be.empty;
       });
     });

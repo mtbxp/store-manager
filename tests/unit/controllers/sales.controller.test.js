@@ -18,7 +18,7 @@ describe('Testa Sales camada controller', () => {
       });
 
       after(() => {
-        salesService.getAll.restore();
+        salesService.getAllSales.restore();
       });
 
       it("tem status 200", async () => {

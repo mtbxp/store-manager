@@ -7,7 +7,6 @@ const getAllProducts = async () => {
 
 const getProductById = async (id) => {
   const result = await productModel.getProductById(id);
-
   if (!result) return null;
   return result;
 };
@@ -17,8 +16,20 @@ const newProduct = async (name) => {
   return product;
 };
 
+const updateProduct = async (id, name) => {
+  const result = await productModel.updateProduct(id, name);
+  return result;
+};
+
+const deleteProduct = async (id) => {
+  const result = await productModel.deleteProduct(id);
+  return result;
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
   newProduct,
+  updateProduct,
+  deleteProduct,
 };

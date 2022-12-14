@@ -1,5 +1,20 @@
 const connection = require('./db/connection');
 
+const addNewSale = async (sales) => {
+  const [previousSales] = await connection.execute(
+    'INSERT INTO StoreManager.sales (date) VALUES (NOW())',
+  );
+  await Promise.all(
+    sales.map(async (sale) =>
+      connection.execute(
+        'INSERT INTO StoreManager.sales_products (sale_id, product_id, quantity) VALUES (?, ?, ?)',
+        [previousSales.insertId, sale.productId, sale.quantity],
+      )),
+  );
+
+  return { id: previousSales.insertId };
+};
+
 const getAllSales = async () => {
   const query = `
     SELECT sp.sale_id as saleId, s.date, sp.product_id as productId, sp.quantity
@@ -32,8 +47,24 @@ const deleteSale = async (id) => {
   return true;
 };
 
+const salesUpdate = async ({ id, sales }) => {
+  await Promise.all(
+    sales.map(async (sale) =>
+      connection.execute(
+        `
+    UPDATE StoreManager.sales_products
+    SET quantity = ?
+    WHERE  product_id = ? AND sale_id = ?
+    `,
+        [sale.quantity, sale.productId, id],
+      )),
+  );
+};
+
 module.exports = {
   getAllSales,
   getSaleById,
   deleteSale,
+  addNewSale,
+  salesUpdate,
 };

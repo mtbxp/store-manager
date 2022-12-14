@@ -1,37 +1,258 @@
-const sinon = require("sinon");
 const { expect } = require("chai");
-const mocks = require("../../../__tests__/_dataMock");
-const salesController = require("../../../src/controllers/sales.controller");
+const { describe } = require("mocha");
+const Sinon = require("sinon");
+
 const salesService = require("../../../src/services/sales.service");
+const salesController = require("../../../src/controllers/sales.controller");
 
-describe('Testa Sales camada controller', () => {
-  describe("lista as vendas", () => {
-    describe("checa se o retorno", () => {
-      const response = {};
+describe("Retorna todas as vendas", () => {
+  describe("se caso sucesso", () => {
+    afterEach(() => {
+      Sinon.restore();
+    });
+    it("retorna um array com status 200", async () => {
       const request = {};
-      before(() => {
-        response.status = sinon.stub().returns(response);
-        response.json = sinon.stub().returns();
-        sinon
-          .stub(salesService, "getAllSales")
-          .resolves(mocks.allProductsResponse);
-      });
+      const response = {};
 
-      after(() => {
-        salesService.getAllSales.restore();
-      });
+      response.status = Sinon.stub().returns(response);
+      response.json = Sinon.stub().returns();
 
-      it("tem status 200", async () => {
+      const resultExecute = [
+        {
+          saleId: 1,
+          date: "2022-08-16T17:35:10.000Z",
+          productId: 1,
+          quantity: 5,
+        },
+      ];
+      Sinon.stub(salesService, "getAllSales").resolves(resultExecute);
+
+      await salesController.getAllSales(request, response);
+
+      const result = response.json.args[0][0];
+
+      expect(result).to.be.an("array");
+      expect(response.status.calledWith(200)).to.be.true;
+      expect(response.json.calledWith(resultExecute)).to.be.true;
+      expect(response.status.calledOnce).to.be.true;
+      expect(response.json.calledOnce).to.be.true;
+    });
+    it("retorna um array com ao menos um resultado e status 200", async () => {
+      const request = {};
+      const response = {};
+
+      response.status = Sinon.stub().returns(response);
+      response.json = Sinon.stub().returns();
+
+      const resultExecute = [
+        {
+          saleId: 1,
+          date: "2022-08-16T17:35:10.000Z",
+          productId: 1,
+          quantity: 5,
+        },
+      ];
+      Sinon.stub(salesService, "getAllSales").resolves(resultExecute);
+
+      await salesController.getAllSales(request, response);
+
+      const result = response.json.args[0][0];
+
+      expect(result).to.be.not.empty;
+      expect(response.status.calledWith(200)).to.be.true;
+      expect(response.json.calledWith(resultExecute)).to.be.true;
+      expect(response.status.calledOnce).to.be.true;
+      expect(response.json.calledOnce).to.be.true;
+    });
+    it("retorna um array com propriedades e status 200", async () => {
+      const request = {};
+      const response = {};
+
+      response.status = Sinon.stub().returns(response);
+      response.json = Sinon.stub().returns();
+
+      const resultExecute = [
+        {
+          saleId: 1,
+          date: "2022-08-16T17:35:10.000Z",
+          productId: 1,
+          quantity: 5,
+        },
+      ];
+      Sinon.stub(salesService, "getAllSales").resolves(resultExecute);
+
+      await salesController.getAllSales(request, response);
+
+      const [result] = response.json.args[0][0];
+
+      expect(result).to.be.an("object");
+      expect(result).to.have.all.keys(
+        "saleId",
+        "date",
+        "productId",
+        "quantity"
+      );
+      expect(response.status.calledWith(200)).to.be.true;
+      expect(response.json.calledWith(resultExecute)).to.be.true;
+      expect(response.status.calledOnce).to.be.true;
+      expect(response.json.calledOnce).to.be.true;
+    });
+  });
+  describe("em caso de nao sucesso", () => {
+    afterEach(() => {
+      Sinon.restore();
+    });
+    it("retorna um erro", async () => {
+      const request = {};
+      const response = {};
+
+      response.status = Sinon.stub().returns(response);
+      response.json = Sinon.stub().returns();
+
+      const resultExecute = new Error("Error");
+      Sinon.stub(salesService, "getAllSales").rejects(resultExecute);
+
+      try {
         await salesController.getAllSales(request, response);
-        expect(response.status.calledWith(200)).to.be.equal(true);
-      });
-
-      it("é um array", async () => {
-        await salesController.getAllSales(request, response);
-        expect(response.json.calledWith(mocks.allProductsResponse)).to.be.equal(
-          true
-        );
-      });
+      } catch (err) {
+        expect(err).to.be.an("error");
+      }
     });
   });
 });
+
+describe("salesController getSaleById", () => {
+  describe("getSaleById caso sucess", () => {
+    afterEach(() => {
+      Sinon.restore();
+    });
+    it("retorna um array com status 200", async () => {
+      const request = {};
+      const response = {};
+
+      response.status = Sinon.stub().returns(response);
+      response.json = Sinon.stub().returns();
+      request.params = { id: 1 };
+
+      const resultExecute = [
+        {
+          date: "2022-08-16T17:35:10.000Z",
+          productId: 1,
+          quantity: 5,
+        },
+      ];
+      Sinon.stub(salesService, "getSaleById").resolves(resultExecute);
+
+      await salesController.getSaleById(request, response);
+
+      const result = response.json.args[0][0];
+
+      expect(result).to.be.an("array");
+      expect(response.status.calledWith(200)).to.be.true;
+      expect(response.json.calledWith(resultExecute)).to.be.true;
+      expect(response.status.calledOnce).to.be.true;
+      expect(response.json.calledOnce).to.be.true;
+    });
+    it("retorna um array vazio e status 200", async () => {
+      const request = {};
+      const response = {};
+
+      response.status = Sinon.stub().returns(response);
+      response.json = Sinon.stub().returns();
+      request.params = { id: 1 };
+
+      const resultExecute = [
+        {
+          date: "2022-08-16T17:35:10.000Z",
+          productId: 1,
+          quantity: 5,
+        },
+      ];
+      Sinon.stub(salesService, "getSaleById").resolves(resultExecute);
+
+      await salesController.getSaleById(request, response);
+
+      const result = response.json.args[0][0];
+
+      expect(result).to.be.an("array");
+      expect(result).to.not.be.empty;
+      expect(response.status.calledWith(200)).to.be.true;
+      expect(response.json.calledWith(resultExecute)).to.be.true;
+      expect(response.status.calledOnce).to.be.true;
+      expect(response.json.calledOnce).to.be.true;
+    });
+    it("retorna um array de objetos e status 200", async () => {
+      const request = {};
+      const response = {};
+
+      response.status = Sinon.stub().returns(response);
+      response.json = Sinon.stub().returns();
+      request.params = { id: 1 };
+
+      const resultExecute = [
+        {
+          date: "2022-08-16T17:35:10.000Z",
+          productId: 1,
+          quantity: 5,
+        },
+      ];
+      Sinon.stub(salesService, "getSaleById").resolves(resultExecute);
+
+      await salesController.getSaleById(request, response);
+
+      const [result] = response.json.args[0][0];
+
+      expect(result).to.be.an("object");
+      expect(result).to.have.all.keys("date", "productId", "quantity");
+      expect(response.status.calledWith(200)).to.be.true;
+      expect(response.json.calledWith(resultExecute)).to.be.true;
+      expect(response.status.calledOnce).to.be.true;
+      expect(response.json.calledOnce).to.be.true;
+    });
+  });
+  describe("getSaleById case not OK", () => {
+    afterEach(() => {
+      Sinon.restore();
+    });
+    it("retorna um erro e status 400", async () => {
+      const request = {};
+      const response = {};
+
+      response.status = Sinon.stub().returns(response);
+      response.json = Sinon.stub().returns();
+      request.params = { id: 5 };
+
+      const resultExecute = [];
+      Sinon.stub(salesService, "getSaleById").resolves(resultExecute);
+
+      await salesController.getSaleById(request, response);
+
+      const result = response.json.args[0][0];
+
+      expect(result).to.be.an("object");
+      expect(result).to.be.keys("message");
+      expect(result.message).to.be.equals("Sale not found");
+      expect(response.status.calledWith(404)).to.be.true;
+      expect(response.status.calledOnce).to.be.true;
+      expect(response.json.calledOnce).to.be.true;
+    });
+    it("retorna um erro", async () => {
+      const request = {};
+      const response = {};
+      request.params = { id: 5 };
+
+      response.status = Sinon.stub().returns(response);
+      response.json = Sinon.stub().returns();
+
+      const resultExecute = new Error("Error");
+      Sinon.stub(salesService, "getSaleById").rejects(resultExecute);
+
+      try {
+        await salesController.getSaleById(request, response);
+      } catch (error) {
+        expect(error).to.be.an("error");
+      }
+    });
+  });
+});
+

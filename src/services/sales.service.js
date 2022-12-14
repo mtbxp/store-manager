@@ -12,7 +12,10 @@ const getSaleById = async (id) => {
   return camelize(result);
 };
 
+const deleteSale = async (id) => salesModel.deleteSale(id);
+
 module.exports = {
   getAllSales,
   getSaleById,
+  deleteSale,
 };

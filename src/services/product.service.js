@@ -26,10 +26,18 @@ const deleteProduct = async (id) => {
   return result;
 };
 
+const getProductByQuery = async (query) => {
+  if (query.length === 0) {
+    return productModel.getAllProducts();
+  }
+  return productModel.getProductByQuery(query);
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
   newProduct,
   updateProduct,
   deleteProduct,
+  getProductByQuery,
 };

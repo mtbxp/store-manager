@@ -16,6 +16,7 @@ A API construída é um sistema de gerenciamento de vendas no formato dropshippi
 * Express;
 * Node;
 * Mysql;
+* Tests
 
 ## Execute localmente:
 
